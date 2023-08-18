@@ -12,8 +12,9 @@ const AuthenProvider = ({ children }) => {
   const [user , setUser] = useState();
 
   const loginHandler = (userlogin) => {
+    const username = userlogin.split(/[@]/)
     setIsLogin((prev) => !prev);
-    setUser(userlogin);
+    setUser(username[0]);
   };
 
   const logoutHandler = () => {

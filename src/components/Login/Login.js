@@ -1,12 +1,17 @@
 import React, { useContext, useEffect, useRef } from "react";
 import classes from "./Login.module.css";
 import { AuthContext } from "../../store/auth/auth-context";
-import { Navigate, redirect, useActionData, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+
+const SignupSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('Email Required'),
+  password: Yup.string().min(6,"Password must longer than 6 character!").required('Password Required')
+});
 
 const Login = () => {
-  const emailInput = useRef();
-  const passwordInput = useRef();
   const authCtx = useContext(AuthContext);
   const navigate = useNavigate()
   // const data = useActionData();
@@ -37,13 +42,12 @@ const Login = () => {
   }, []);
 
 
-  const loginHandler = e => {
-    e.preventDefault();
-    if (emailInput.current.value.trim() !== "" && passwordInput.current.value.trim() !== "") {
-      authCtx.onLogin(emailInput.current.value)
-      navigate("/")
-    }
-  }
+  // const loginHandler = values  => {
+  //   // e.preventDefault();
+  //   console.log(values);
+  //     authCtx.onLogin(emailInput.current.value)
+  //     navigate("/")
+  // }
 
   return (
     <>
@@ -51,28 +55,37 @@ const Login = () => {
         <h1>ReactMeals</h1>
       </header>
       <div className={classes.body}>
-        <form onSubmit={loginHandler} className={classes.form}>
+      <Formik
+       initialValues={{
+         email: '',
+         password: '',
+       }}
+       validationSchema={SignupSchema}
+       onSubmit={(values) => {
+        console.log(values);
+        authCtx.onLogin(values.email)
+        navigate("/")
+       }}
+     >
+      {({ errors, touched }) => (
+        <Form className={classes.form}>
           <div className={classes.group}>
             <label htmlFor="email">Email</label>
-            <input ref={emailInput} id="email" type="text"></input>
+            <Field name="email" type="email" />
           </div>
+          {errors.email && touched.email ? <div className={classes.error}>{errors.email}</div> : null}
           <div className={classes.group}>
-            <label htmlFor="Password">Password</label>
-            <input ref={passwordInput} id="Password" type="password"></input>
+            <label htmlFor="password">Password</label>
+            <Field name="password" type="password" />
           </div>
-          {/* {data && data.errors && (
-            <ul>
-              {Object.values(data.errors).map((err) => (
-                <li className={classes.error} key={err}>{err}</li>
-              ))}
-            </ul>
-          )}
-          {data && data.message && <p className={classes.error} >{data.message}</p>} */}
+          {errors.password && touched.password ? <div className={classes.error}>{errors.password}</div> : null}
           <button className={classes.button} type="submit">
             Login
           </button>
           <div id="signInDiv"></div>
-        </form>
+        </Form>
+         )}
+        </Formik>
       </div>
     </>
   );

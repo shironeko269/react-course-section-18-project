@@ -69,7 +69,7 @@ const Cart = (props) => {
     if (authCtx.isLoggin) {
       setIdOrder((prev) => !prev);
     } else {
-      navigate("login")
+      navigate("auth?mode=login")
     }
   };
 
