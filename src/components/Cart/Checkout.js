@@ -1,5 +1,3 @@
-import React, { useRef, useState } from "react";
-
 import styled from "./Checkout.module.css";
 
 import useInput from "../../hooks/useInput";

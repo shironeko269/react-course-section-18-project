@@ -6,8 +6,11 @@ import classes from "./Cart.module.css";
 import CartContext from "../../store/cart-context";
 import Checkout from "./Checkout";
 import useFetch from "../../hooks/useFetch";
+import { AuthContext } from "../../store/auth/auth-context";
+import { useNavigate } from "react-router-dom";
 
 const Cart = (props) => {
+  const authCtx = useContext(AuthContext);
   const cartCtx = useContext(CartContext);
   const [isOrder, setIdOrder] = useState(false);
   const { isLoading, error, RequestHandler: addNewOrder } = useFetch();
@@ -15,6 +18,8 @@ const Cart = (props) => {
 
   const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
   const hasItems = cartCtx.items.length > 0;
+
+  const navigate = useNavigate()
 
   const cartItemRemoveHandler = (id) => {
     cartCtx.removeItem(id);
@@ -61,7 +66,11 @@ const Cart = (props) => {
 
   let content = "";
   const orderHandler = () => {
-    setIdOrder((prev) => !prev);
+    if (authCtx.isLoggin) {
+      setIdOrder((prev) => !prev);
+    } else {
+      navigate("login")
+    }
   };
 
   const isSubmitingData = <p>Sending order data....</p>;
